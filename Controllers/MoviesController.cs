@@ -131,13 +131,30 @@ namespace _521_Project_3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Genre,YearReleased,MovieImage")] Movie movie)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Genre,YearReleased,MovieImage")] Movie movie, IFormFile MovieImage)
         {
             if (id != movie.Id)
             {
                 return NotFound();
             }
+            ModelState.Remove(nameof(movie.MovieImage));
 
+            Movie existingMovie = _context.Movie.AsNoTracking().FirstOrDefault(m => m.Id == movie.Id);
+
+            if (MovieImage != null && MovieImage.Length > 0)
+            {
+                var memoryStream = new MemoryStream();
+                await MovieImage.CopyToAsync(memoryStream);
+                movie.MovieImage = memoryStream.ToArray();
+            }else if(existingMovie == null)
+            {
+                movie.MovieImage = existingMovie.MovieImage;
+            }
+            else
+            {
+                movie.MovieImage = new byte[0];
+            }
+            //not sure if the below code is right because he didnt freaking scroll down and the stupid code is not there like he says it is
             if (ModelState.IsValid)
             {
                 try
