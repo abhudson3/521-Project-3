@@ -50,7 +50,7 @@ namespace _521_Project_3.Controllers
         public IActionResult Create()
         {
             ViewData["ActorId"] = new SelectList(_context.Actor, "Id", "Name");
-            ViewData["MovieId"] = new SelectList(_context.Movie, "Id", "Id");
+            ViewData["MovieId"] = new SelectList(_context.Movie, "Id", "Title");
             return View();
         }
 
@@ -68,7 +68,7 @@ namespace _521_Project_3.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ActorId"] = new SelectList(_context.Actor, "Id", "Name", actorMovie.ActorId);
-            ViewData["MovieId"] = new SelectList(_context.Movie, "Id", "Id", actorMovie.MovieId);
+            ViewData["MovieId"] = new SelectList(_context.Movie, "Id", "Title", actorMovie.MovieId);
             return View(actorMovie);
         }
 
@@ -86,7 +86,7 @@ namespace _521_Project_3.Controllers
                 return NotFound();
             }
             ViewData["ActorId"] = new SelectList(_context.Actor, "Id", "Name", actorMovie.ActorId);
-            ViewData["MovieId"] = new SelectList(_context.Movie, "Id", "Id", actorMovie.MovieId);
+            ViewData["MovieId"] = new SelectList(_context.Movie, "Id", "Title", actorMovie.MovieId);
             return View(actorMovie);
         }
 
@@ -123,7 +123,7 @@ namespace _521_Project_3.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ActorId"] = new SelectList(_context.Actor, "Id", "Name", actorMovie.ActorId);
-            ViewData["MovieId"] = new SelectList(_context.Movie, "Id", "Id", actorMovie.MovieId);
+            ViewData["MovieId"] = new SelectList(_context.Movie, "Id", "Title", actorMovie.MovieId);
             return View(actorMovie);
         }
 
