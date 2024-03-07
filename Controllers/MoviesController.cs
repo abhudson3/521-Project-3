@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using _521_Project_3.Data;
 using _521_Project_3.Models;
+using System.Net;
+using System.Text.Json;
+using System.Web;
+using VaderSharp2;
 
 namespace _521_Project_3.Controllers
 {
@@ -57,6 +61,51 @@ namespace _521_Project_3.Controllers
 
             MovieDetailsVM movieDetailsVM = new MovieDetailsVM();
             movieDetailsVM.Movie = movie;
+            var queryText = movie.Title;
+            var json = "";
+            using (WebClient wc = new WebClient())
+            {
+                //fake like you are a "real" web browser
+                wc.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+                json = wc.DownloadString("https://www.reddit.com/search.json?limit=100&q=" + HttpUtility.UrlEncode(queryText));
+            }
+            var textToExamine = new List<string>();
+            JsonDocument doc = JsonDocument.Parse(json);
+            // Navigate to the "data" object
+            JsonElement dataElement = doc.RootElement.GetProperty("data");
+            // Navigate to the "children" array
+            JsonElement childrenElement = dataElement.GetProperty("children");
+            foreach (JsonElement child in childrenElement.EnumerateArray())
+            {
+                if (child.TryGetProperty("data", out JsonElement data))
+                {
+                    if (data.TryGetProperty("selftext", out JsonElement selftext))
+                    {
+                        string selftextValue = selftext.GetString();
+                        if (!string.IsNullOrEmpty(selftextValue)) { textToExamine.Add(selftextValue); }
+                        else if (data.TryGetProperty("title", out JsonElement title)) //use title if text is empty
+                        {
+                            string titleValue = title.GetString();
+                            if (!string.IsNullOrEmpty(titleValue)) { textToExamine.Add(titleValue); }
+                        }
+                    }
+                }
+            }
+            var analyzer = new SentimentIntensityAnalyzer();
+            int validResults = 0;
+            double resultsTotal = 0;
+            foreach(string textValue in textToExamine)
+            {
+                var results = analyzer.PolarityScores(textValue);
+                if(results.Compound != 0)
+                {
+                    resultsTotal += results.Compound;
+                    validResults++;
+                }
+
+            }
+            double avgResult = Math.Round(resultsTotal / validResults, 2);
+            movieDetailsVM.Sentiment = avgResult.ToString();// + ", " + CategorizeSentiment(avgResult);
 
             var actors = new List<Actor>();
             ////Option 1
