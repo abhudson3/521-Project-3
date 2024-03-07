@@ -40,8 +40,12 @@
                 @Html.DisplayFor(modelItem => item.YearReleased)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.MovieImage)
+                @if (item.MovieImage != null && item.MovieImage.Length != 0)
+                {
+                    <img height="150" src="@Url.Action("GetMovieImage", "Movies", new {item.Id})">
+                }
             </td>
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

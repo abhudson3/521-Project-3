@@ -1,4 +1,4 @@
-﻿@model _521_Project_3.Models.Movie
+﻿@model _521_Project_3.Models.MovieDetailsVM
 
 @{
     ViewData["Title"] = "Details";
@@ -11,32 +11,35 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
+            @Html.DisplayNameFor(model => model.Movie.Title)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
+            @Html.DisplayFor(model => model.Movie.Title)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Genre)
+            @Html.DisplayNameFor(model => model.Movie.MovieImage)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Genre)
+            @if (Model.Movie.MovieImage != null && Model.Movie.MovieImage.Length != 0)
+            {
+                <img height="150" src="@Url.Action("GetMovieImage", "Movies", new {Model.Movie.Id})"/>
+            }
+        </dd> 
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Movie.Genre)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Movie.Genre)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.YearReleased)
+            @Html.DisplayNameFor(model => model.Movie.YearReleased)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.YearReleased)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MovieImage)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MovieImage)
+            @Html.DisplayFor(model => model.Movie.YearReleased)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.Movie.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

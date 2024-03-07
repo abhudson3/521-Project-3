@@ -10,14 +10,29 @@ using _521_Project_3.Models;
 
 namespace _521_Project_3.Controllers
 {
+
     public class MoviesController : Controller
     {
-        private readonly ApplicationDbContext _context;
 
         public MoviesController(ApplicationDbContext context)
         {
             _context = context;
         }
+
+        public async Task<IActionResult> GetMovieImage(int id)
+        {
+            var Movie = await _context.Movie
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (Movie == null)
+            {
+                return NotFound();
+            }
+            var imageData = Movie.MovieImage;
+            return File(imageData, "image/jpg");
+        }
+        private readonly ApplicationDbContext _context;
+
+
 
         // GET: Movies
         public async Task<IActionResult> Index()
@@ -40,7 +55,26 @@ namespace _521_Project_3.Controllers
                 return NotFound();
             }
 
-            return View(movie);
+            MovieDetailsVM movieDetailsVM = new MovieDetailsVM();
+            movieDetailsVM.Movie = movie;
+
+            var actors = new List<Actor>();
+            ////Option 1
+            actors = await (from actor in _context.Actor
+                            join am in _context.ActorMovie on actor.Id equals am.ActorId
+                            where am.MovieId == id
+                            select actor)
+                            .ToListAsync();
+
+            ////Option 2
+            //actors = await _context.ActorMovie.Where(am => am.MovieID == id)
+            //                                .Include(a => a.Actor)
+            //                                .Select(a => a.Actor)
+            //                                .ToListAsync();
+
+            movieDetailsVM.Actors = actors;
+
+            return View(movieDetailsVM);
         }
 
         // GET: Movies/Create
@@ -54,10 +88,21 @@ namespace _521_Project_3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Genre,YearReleased,MovieImage")] Movie movie)
+        public async Task<IActionResult> Create([Bind("Id,Title,Genre,YearReleased")] Movie movie, IFormFile MovieImage)
         {
+            ModelState.Remove(nameof(movie.MovieImage));
             if (ModelState.IsValid)
             {
+                if(MovieImage != null && MovieImage.Length > 0)
+                {
+                    var memoryStream = new MemoryStream();
+                    await MovieImage.CopyToAsync(memoryStream);
+                    movie.MovieImage = memoryStream.ToArray();
+                }
+                else
+                {
+                    movie.MovieImage = new byte[0];
+                }
                 _context.Add(movie);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
