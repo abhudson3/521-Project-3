@@ -45,9 +45,13 @@
             <td>
                 @Html.DisplayFor(modelItem => item.IMDBLink)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Photo)
-            </td>
+                <td>
+                    @if (item.Photo != null && item.Photo.Length != 0)
+                    {
+                        <img height="150" src="@Url.Action("GetActorPhoto", "Actors", new {item.Id})">
+                    }
+                </td>
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

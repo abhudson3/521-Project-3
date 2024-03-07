@@ -1,4 +1,4 @@
-﻿@model _521_Project_3.Models.Actor
+﻿@model _521_Project_3.Models.ActorDetailsVM
 
 @{
     ViewData["Title"] = "Details";
@@ -11,38 +11,47 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Actor.Name)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.Actor.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Sentiment)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Sentiment)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Actor.Photo)
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.Actor.Photo != null && Model.Actor.Photo.Length != 0)
+            {
+                <img height="150" src="@Url.Action("GetActorPhoto", "Actors", new {Model.Actor.Id})" />
+            }
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Gender)
+            @Html.DisplayNameFor(model => model.Actor.Gender)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Gender)
+            @Html.DisplayFor(model => model.Actor.Gender)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Age)
+            @Html.DisplayNameFor(model => model.Actor.Age)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Age)
+            @Html.DisplayFor(model => model.Actor.Age)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IMDBLink)
+            @Html.DisplayNameFor(model => model.Actor.IMDBLink)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IMDBLink)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Photo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Photo)
+            @Html.DisplayFor(model => model.Actor.IMDBLink)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.Actor.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
