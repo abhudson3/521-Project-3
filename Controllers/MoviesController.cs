@@ -43,7 +43,41 @@ namespace _521_Project_3.Controllers
         {
             return View(await _context.Movie.ToListAsync());
         }
+        public static readonly HttpClient client = new HttpClient();
 
+        public static async Task<List<string>> SearchWikipediaAsync(string searchQuery)
+        {
+            string baseUrl = "https://en.wikipedia.org/w/api.php";
+            string url = $"{baseUrl}?action=query&list=search&srlimit=100&srsearch={Uri.EscapeDataString(searchQuery)}&format=json";
+            List<string> textToExamine = new List<string>();
+            try
+            {
+                //Ask WikiPedia for a list of pages that relate to the query
+                HttpResponseMessage response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var jsonDocument = JsonDocument.Parse(responseBody);
+                var searchResults = jsonDocument.RootElement.GetProperty("query").GetProperty("search");
+                foreach (var item in searchResults.EnumerateArray())
+                {
+                    var pageId = item.GetProperty("pageid").ToString();
+                    //Ask WikiPedia for the text of each page in the query results
+                    string pageUrl = $"{baseUrl}?action=query&pageids={pageId}&prop=extracts&explaintext&format=json";
+                    HttpResponseMessage pageResponse = await client.GetAsync(pageUrl);
+                    pageResponse.EnsureSuccessStatusCode();
+                    string pageResponseBody = await pageResponse.Content.ReadAsStringAsync();
+                    var jsonPageDocument = JsonDocument.Parse(pageResponseBody);
+                    var pageContent = jsonPageDocument.RootElement.GetProperty("query").GetProperty("pages").GetProperty(pageId).GetProperty("extract").GetString();
+                    textToExamine.Add(pageContent);
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ", e.Message);
+            }
+            return textToExamine;
+        }
         // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -82,6 +116,7 @@ namespace _521_Project_3.Controllers
                     if (data.TryGetProperty("selftext", out JsonElement selftext))
                     {
                         string selftextValue = selftext.GetString();
+                        //Console.WriteLine(selftextValue);
                         if (!string.IsNullOrEmpty(selftextValue)) { textToExamine.Add(selftextValue); }
                         else if (data.TryGetProperty("title", out JsonElement title)) //use title if text is empty
                         {
@@ -91,14 +126,24 @@ namespace _521_Project_3.Controllers
                     }
                 }
             }
+            var postSentiments = new List<PostSentiment>();
+
             var analyzer = new SentimentIntensityAnalyzer();
             int validResults = 0;
             double resultsTotal = 0;
             foreach(string textValue in textToExamine)
             {
                 var results = analyzer.PolarityScores(textValue);
+                var localSentiment = new PostSentiment();
+                
+                localSentiment.PostData = textValue;
+                localSentiment.SentimentScore = Convert.ToDouble(results.Compound);
+                Console.WriteLine(localSentiment);
+    
+                postSentiments.Add(localSentiment);
                 if(results.Compound != 0)
                 {
+                    
                     resultsTotal += results.Compound;
                     validResults++;
                 }
