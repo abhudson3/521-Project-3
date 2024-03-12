@@ -17,6 +17,8 @@ namespace _521_Project_3.Controllers
 
     public class MoviesController : Controller
     {
+        public static readonly HttpClient client = new HttpClient();
+
 
         public MoviesController(ApplicationDbContext context)
         {
@@ -43,8 +45,6 @@ namespace _521_Project_3.Controllers
         {
             return View(await _context.Movie.ToListAsync());
         }
-        public static readonly HttpClient client = new HttpClient();
-
         public static async Task<List<string>> SearchWikipediaAsync(string searchQuery)
         {
             string baseUrl = "https://en.wikipedia.org/w/api.php";
@@ -95,37 +95,8 @@ namespace _521_Project_3.Controllers
 
             MovieDetailsVM movieDetailsVM = new MovieDetailsVM();
             movieDetailsVM.Movie = movie;
-            var queryText = movie.Title;
-            var json = "";
-            using (WebClient wc = new WebClient())
-            {
-                //fake like you are a "real" web browser
-                wc.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-                json = wc.DownloadString("https://www.reddit.com/search.json?limit=100&q=" + HttpUtility.UrlEncode(queryText));
-            }
-            var textToExamine = new List<string>();
-            JsonDocument doc = JsonDocument.Parse(json);
-            // Navigate to the "data" object
-            JsonElement dataElement = doc.RootElement.GetProperty("data");
-            // Navigate to the "children" array
-            JsonElement childrenElement = dataElement.GetProperty("children");
-            foreach (JsonElement child in childrenElement.EnumerateArray())
-            {
-                if (child.TryGetProperty("data", out JsonElement data))
-                {
-                    if (data.TryGetProperty("selftext", out JsonElement selftext))
-                    {
-                        string selftextValue = selftext.GetString();
-                        //Console.WriteLine(selftextValue);
-                        if (!string.IsNullOrEmpty(selftextValue)) { textToExamine.Add(selftextValue); }
-                        else if (data.TryGetProperty("title", out JsonElement title)) //use title if text is empty
-                        {
-                            string titleValue = title.GetString();
-                            if (!string.IsNullOrEmpty(titleValue)) { textToExamine.Add(titleValue); }
-                        }
-                    }
-                }
-            }
+            List<string> textToExamine = await SearchWikipediaAsync(movie.Title);
+
             var postSentiments = new List<PostSentiment>();
 
             var analyzer = new SentimentIntensityAnalyzer();
@@ -138,7 +109,7 @@ namespace _521_Project_3.Controllers
                 
                 localSentiment.PostData = textValue;
                 localSentiment.SentimentScore = Convert.ToDouble(results.Compound);
-                Console.WriteLine(localSentiment);
+                // Console.WriteLine(localSentiment);
     
                 postSentiments.Add(localSentiment);
                 if(results.Compound != 0)
@@ -149,6 +120,9 @@ namespace _521_Project_3.Controllers
                 }
 
             }
+
+            movieDetailsVM.PostSentiments = postSentiments;
+            
             double avgResult = Math.Round(resultsTotal / validResults, 2);
             movieDetailsVM.Sentiment = avgResult.ToString();// + ", " + CategorizeSentiment(avgResult);
 

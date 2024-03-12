@@ -50,12 +50,33 @@
             @Html.DisplayFor(model => model.Actor.IMDBLink)
         </dd>
     </dl>
-      <dl class="row">
-        <h4>Reddit!</h4>
-        <hr />
-
-
-      </dl>
+    <table class="table">
+            <thead>
+                <th>
+                    <tr class="col-sm-2">
+                        <b>Overall Sentiment:</b>
+                    </tr>
+                    <tr class="col-sm-10">
+                        @Html.DisplayFor(model => model.Sentiment)
+                    </tr>
+                </th>
+                <tr>
+                    <th>Post</th>
+                    <th>Sentiment</th>
+                </tr>
+            </thead>
+            @foreach (var item in Model.PostSentiments)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PostData)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SentimentScore)
+                    </td>
+                </tr>
+            }
+        </table>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Actor.Id">Edit</a> |
