@@ -13,6 +13,9 @@ namespace _521_Project_3.Models
         [Display(Name = "Year Released")]
         public string? YearReleased { get; set; }
 
+          public string? IMDBLink { get; set; }
+
+
         [DataType(DataType.Upload)]
         [DisplayName("Movie Image")]
         public byte[]? MovieImage { get; set; }
