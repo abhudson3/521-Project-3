@@ -28,6 +28,11 @@
                 <span asp-validation-for="YearReleased" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="IMDBLink" class="control-label"></label>
+                <input asp-for="IMDBLink" class="form-control" />
+                <span asp-validation-for="IMDBLink" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="MovieImage" class="control-label"></label>
                 <input type="file" id="MovieImage" name="MovieImage" multiple class="form-control" />
                 <span asp-validation-for="MovieImage" class="text-danger"></span>

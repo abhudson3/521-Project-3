@@ -13,6 +13,7 @@ namespace _521_Project_3.Models
         [Display(Name = "Year Released")]
         public string? YearReleased { get; set; }
 
+        [Display(Name = "IMDB Link")]
           public string? IMDBLink { get; set; }
 
 

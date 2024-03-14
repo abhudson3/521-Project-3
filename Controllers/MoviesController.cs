@@ -156,7 +156,7 @@ namespace _521_Project_3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Genre,YearReleased")] Movie movie, IFormFile MovieImage)
+        public async Task<IActionResult> Create([Bind("Id,Title,Genre,YearReleased,IMDBLink")] Movie movie, IFormFile MovieImage)
         {
             ModelState.Remove(nameof(movie.MovieImage));
             if (ModelState.IsValid)
