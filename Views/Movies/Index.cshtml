@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Movie Home</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -12,22 +12,21 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.Title)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.Genre)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.YearReleased)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.IMDBLink)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.MovieImage)
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>

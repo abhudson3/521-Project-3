@@ -20,3 +20,7 @@ html {
 body {
   margin-bottom: 60px;
 }
+[value~="Save"] {
+ margin-top: 15px; 
+ margin-bottom: 15px; 
+}
