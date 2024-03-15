@@ -39,8 +39,11 @@
             @Html.DisplayNameFor(model => model.MovieImage)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MovieImage)
-        </dd>
+            @if (Model.MovieImage != null && Model.MovieImage.Length != 0)
+            {
+                <img height="150" src="@Url.Action("GetMovieImage", "Movies", new {Model.Id})"/>
+            }
+        </dd> 
     </dl>
     
     <form asp-action="Delete">
